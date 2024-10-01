@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сравнение изображений</title>
+    <link rel="stylesheet" href="style.css">
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div id="imageContainer">
+        <img id="displayedImage" src="./Image_11zon.png"
+          alt="Изображение для сравнения">
+      </div>
+      <h1>Сравнение изображений</h1>
+      <input type="file" id="fileInput" multiple>
+      <ul id="fileList"></ul>
+
+      <div class="input-group">
+        <input type="text" id="numberInput"
+          placeholder="Введите номера файлов (1359)">
+        <button id="checkButton">Проверить</button>
+
+      </div>
+
+      <div id="matches"></div>
+      <div id="stats"></div>
+
+      <button id="downloadButton" style="display: none;">Скачать архив с
+        совпавшими файлами</button>
+      <button id="resetButton" class="reset-button"
+        style="display: none;">Сброс</button>
+      <div id="logo__box">
+        <img id="logo" src="./logo.png" alt="логотип">
+        <p id="logo__text">Code, Create, Innovate</p>
+      </div>
+    </div>
+
+    <script src="main.js"></script>
+  </body>
+
+</html>
