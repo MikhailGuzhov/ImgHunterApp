@@ -14,7 +14,8 @@ body {
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   padding: 20px;
-  width: 800px;
+  width: 90%; /* Изменено на 90% для адаптивности */
+  max-width: 800px; /* Ограничение ширины */
   text-align: center;
 }
 
@@ -33,6 +34,7 @@ input[type="file"] {
   justify-content: space-between;
   margin-bottom: 10px;
   align-items: center;
+  flex-wrap: wrap; /* Позволяет элементам переноситься */
 }
 
 #numberInput {
@@ -40,6 +42,7 @@ input[type="file"] {
   border: 1px solid #ccc;
   border-radius: 4px;
   width: 70%;
+  min-width: 200px; /* Минимальная ширина для текстового поля */
 }
 
 button {
@@ -107,6 +110,7 @@ li:last-child {
 #downloadButton:hover {
   background-color: #218838;
 }
+
 #imageContainer {
   position: relative;
   width: 100%;
@@ -125,8 +129,7 @@ li:last-child {
 }
 
 #logo {
-  max-width: 30px;
-  /*прижимаем к левому краю */
+  max-width: 30px; /* Зафиксированная ширина логотипа */
   display: flex;
 }
 
@@ -135,7 +138,43 @@ li:last-child {
   display: flex;
   align-items: center;
 }
+
 #logo__text {
   font-size: 12px;
   font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .input-group {
+    flex-direction: column; /* Вертикальное расположение на мобильных */
+  }
+
+  #numberInput {
+    width: 100%; /* Полная ширина на мобильных */
+    margin-bottom: 10px; /* Отступ между полем и кнопкой */
+  }
+
+  button {
+    width: 100%; /* Полная ширина для кнопок на мобильных */
+    margin-left: 0; /* Убираем отступ слева */
+  }
+  
+  #logo__text {
+    font-size: 10px; /* Меньший размер текста на мобильных */
+  }
+}
+
+@media (max-width: 576px) {
+  h1 {
+    font-size: 24px; /* Уменьшаем заголовок на маленьких экранах */
+  }
+  
+  #logo__box {
+    flex-direction: column; /* Вертикальное расположение логотипа и текста */
+    align-items: center; /* Центрирование элементов */
+  }
+  
+  #logo__text {
+    margin-top: 5px; /* Отступы между логотипом и текстом */
+  }
 }
