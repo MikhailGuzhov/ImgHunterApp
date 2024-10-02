@@ -108,21 +108,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const zip = new JSZip();
       const folder = zip.folder("matched_files"); // Создание папки в архиве
 
-      // Добавление файлов в архив
-      const fileReadPromises = matches.map((fileName) => {
-        const file = filesArray.find((f) => f.name === fileName);
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = function (e) {
-            folder.file(file.name, e.target.result); // Добавление файла в папку
-            resolve();
-          };
-          reader.onerror = reject;
-          reader.readAsArrayBuffer(file); // Читаем содержимое файла как ArrayBuffer
-        });
-      });
-
-      Promise.all(fileReadPromises).then(() => {
+      addFilesToZip(folder, matches.map((fileName) => {
+        return filesArray.find((f) => f.name === fileName);
+      })).then(() => {
         zip.generateAsync({ type: "blob" }).then(function (content) {
           const link = document.createElement("a");
           link.href = URL.createObjectURL(content); // Создаем URL для ZIP-архива
@@ -131,6 +119,26 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       });
     };
+  };
+
+  const addFilesToZip = (folder, files) => {
+    const addFileToZip = (index) => {
+      if (index >= files.length) {
+        return Promise.resolve(); // Все файлы добавлены
+      } 
+      const file = files[index];
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          folder.file(file.name, e.target.result); // Добавление файла в папку
+          resolve(addFileToZip(index + 1)); // Заканчиваем текущее добавление и начинаем следующее
+        };
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(file); // Читаем содержимое файла как ArrayBuffer
+      });
+    };
+    
+    return addFileToZip(0); // Начинаем добавление с первого файла
   };
 
   checkButton.addEventListener("click", handleCheck);
