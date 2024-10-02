@@ -18,6 +18,21 @@ body {
   max-width: 800px; /* Ограничение ширины */
   text-align: center;
 }
+.file-button {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #007bff; /* Цвет фона */
+    color: white; /* Цвет текста */
+    border: none;
+    border-radius: 5px; /* Скругление углов */
+    cursor: pointer;
+    text-align: center;
+}
+
+.file-button:hover {
+    background-color: #0056b3; /* Цвет фона при наведении */
+}
+
 
 h1 {
   color: #333;
