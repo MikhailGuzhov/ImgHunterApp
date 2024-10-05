@@ -201,10 +201,11 @@ li:last-child {
 }
 
 .preview-img {
-  border: 3px solid #ccc; /* Толщина границы */
-  margin: 10px;
-  cursor: pointer;
-  max-width: 150px; /* Максимальная ширина изображений */
+  max-width: 200px; /* Максимальная ширина */
+  max-height: 150px; /* Максимальная высота */
+  object-fit: cover; /* Сохранение пропорций */
+  margin: 5px; /* Отступы между изображениями */
+  border: 1px solid #ccc; /* Опционально: рамка вокруг изображения */
 }
 
 .preview-img.matched {
