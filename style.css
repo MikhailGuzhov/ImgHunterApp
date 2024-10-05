@@ -19,20 +19,20 @@ body {
   text-align: center;
 }
 .file-button {
-    display: inline-block;
-    padding: 10px 15px;
-    background-color: #007bff; /* Цвет фона */
-    color: white; /* Цвет текста */
-    border: none;
-    border-radius: 5px; /* Скругление углов */
-    cursor: pointer;
-    text-align: center;
+  display: inline-block;
+  padding: 10px 15px;
+  background-color: #007bff; /* Цвет фона */
+  color: white; /* Цвет текста */
+  border: none;
+  border-radius: 5px; /* Скругление углов */
+  cursor: pointer;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .file-button:hover {
-    background-color: #0056b3; /* Цвет фона при наведении */
+  background-color: #0056b3; /* Цвет фона при наведении */
 }
-
 
 h1 {
   color: #333;
@@ -173,7 +173,7 @@ li:last-child {
     width: 100%; /* Полная ширина для кнопок на мобильных */
     margin-left: 0; /* Убираем отступ слева */
   }
-  
+
   #logo__text {
     font-size: 10px; /* Меньший размер текста на мобильных */
   }
@@ -183,13 +183,43 @@ li:last-child {
   h1 {
     font-size: 24px; /* Уменьшаем заголовок на маленьких экранах */
   }
-  
+
   #logo__box {
     flex-direction: column; /* Вертикальное расположение логотипа и текста */
     align-items: center; /* Центрирование элементов */
   }
-  
+
   #logo__text {
     margin-top: 5px; /* Отступы между логотипом и текстом */
   }
+}
+#previewContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* Центрирование изображений */
+  margin-top: 20px; /* Отступ сверху */
+}
+
+.preview-img {
+  border: 3px solid #ccc; /* Толщина границы */
+  margin: 10px;
+  cursor: pointer;
+  max-width: 150px; /* Максимальная ширина изображений */
+}
+
+.preview-img.matched {
+  border-color: #ff5722; /* Цвет границы при совпадении */
+}
+
+.preview-img.matched {
+  border-color: green; /* Зеленая рамка для совпадающих */
+}
+
+.preview-img.selected {
+  border-color: blue; /* Синяя рамка для выбранных изображений */
+}
+
+#previewButton {
+  margin-top: 20px; /* Отступ сверху */
+  padding: 10px 15px; /* Поля */
 }
