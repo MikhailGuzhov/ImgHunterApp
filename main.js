@@ -7,76 +7,128 @@ document.addEventListener("DOMContentLoaded", () => {
   const statsDiv = document.getElementById("stats");
   const downloadButton = document.getElementById("downloadButton");
   const resetButton = document.getElementById("resetButton");
-
-  if (
-    !fileInput ||
-    !fileList ||
-    !numberInput ||
-    !checkButton ||
-    !matchesDiv ||
-    !statsDiv ||
-    !downloadButton ||
-    !resetButton
-  ) {
-    console.error("Не удалось найти один или несколько элементов на странице.");
-    return; // Предотвращаем выполнение дальнейшего кода, если элементы не найдены
-  }
+  const previewButton = document.getElementById("previewButton");
+  const previewContainer = document.getElementById("previewContainer");
 
   let filesArray = [];
+  let selectedImages = [];
+  let matches = [];
 
   fileInput.addEventListener("change", function () {
     fileList.innerHTML = "";
     filesArray = Array.from(fileInput.files);
     filesArray.forEach((file) => {
       const li = document.createElement("li");
-      li.textContent = file.name; // Полное имя файла
+      li.textContent = file.name;
       fileList.appendChild(li);
     });
   });
 
-  const handleCheck = () => {
-    const separators = /[\s,;:]+/; // Разделители: пробел, запятая, точка с запятой и двоеточие
-    const numbers = numberInput.value
-      .split(separators) // Разделяем по определенным разделителям
-      .map((num) => num.trim())
-      .filter((num) => num); // Убираем пустые строки
+  const transliterate = (text) => {
+    const ruToEn = {
+      а: "a",
+      б: "b",
+      в: "v",
+      г: "g",
+      д: "d",
+      е: "e",
+      ё: "e",
+      ж: "zh",
+      з: "z",
+      и: "i",
+      й: "y",
+      к: "k",
+      л: "l",
+      м: "m",
+      н: "n",
+      о: "o",
+      п: "p",
+      р: "r",
+      с: "s",
+      т: "t",
+      у: "u",
+      ф: "f",
+      х: "kh",
+      ц: "ts",
+      ч: "ch",
+      ш: "sh",
+      щ: "shch",
+      ъ: "",
+      ы: "y",
+      ь: "",
+      э: "e",
+      ю: "yu",
+      я: "ya",
+      А: "A",
+      Б: "B",
+      В: "V",
+      Г: "G",
+      Д: "D",
+      Е: "E",
+      Ё: "E",
+      Ж: "Zh",
+      З: "Z",
+      И: "I",
+      Й: "Y",
+      К: "K",
+      Л: "L",
+      М: "M",
+      Н: "N",
+      О: "O",
+      П: "P",
+      Р: "R",
+      С: "S",
+      Т: "T",
+      У: "U",
+      Ф: "F",
+      Х: "Kh",
+      Ц: "Ts",
+      Ч: "Ch",
+      Ш: "Sh",
+      Щ: "Shch",
+      Ъ: "",
+      Ы: "Y",
+      Ь: "",
+      Э: "E",
+      Ю: "Yu",
+      Я: "Ya",
+    };
+    return text
+      .split("")
+      .map((char) => ruToEn[char] || char)
+      .join("");
+  };
 
-    // Если поле ввода пустое, просто ничего не делаем и выходим из функции
+  const handleCheck = () => {
+    const separators = /[\s,;:]+/;
+    const numbers = numberInput.value
+      .split(separators)
+      .map((num) => num.trim())
+      .filter((num) => num);
+
     if (numbers.length === 0) {
-      return; // можно вывести сообщение об ошибке, если необходимо
+      console.log("Нет введённых чисел для проверки.");
+      return;
     }
 
-    const matches = [];
+    matches = []; // Сбросить массив совпадений
     const duplicates = new Set();
     const seenNames = new Set();
 
-    // Определение совпадений и дубликатов
+    const normalizedNumbers = numbers.map((num) => transliterate(num));
+
     filesArray.forEach((file) => {
       const fileName = file.name;
-      const numericPart = fileName.slice(-8, -4); // Извлекаем последние 4 цифры перед расширением
-      const fileNumber = fileName.match(/(\d+)/); // Извлекаем только числовую часть из имени файла
-      const numberToCheck = fileNumber ? fileNumber[0] : null; // Проверяем, есть ли числовая часть
+      const normalizedFileName = transliterate(fileName);
 
-      // Поиск по числовым частям
-      if (
-        (numbers.includes(numericPart) && !matches.includes(fileName)) ||
-        (numberToCheck &&
-          numbers.includes(numberToCheck) &&
-          !matches.includes(fileName))
-      ) {
-        matches.push(fileName);
-        highlightMatch(fileName);
-      }
-
-      // Поиск по полным именам файлов
-      numbers.forEach((num) => {
-        if (fileName.includes(num) && !matches.includes(fileName)) {
+      normalizedNumbers.forEach((num) => {
+        const regex = new RegExp(num, "i");
+        if (regex.test(normalizedFileName)) {
           matches.push(fileName);
           highlightMatch(fileName);
         }
       });
 
-      // Проверка на дубликат
       if (seenNames.has(fileName)) {
         duplicates.add(fileName);
         highlightDuplicate(fileName);
@@ -85,7 +137,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Проверка введенных значений на дубликаты
     const inputNumbersDuplicates = numbers.filter(
       (num, index) => numbers.indexOf(num) !== index
     );
@@ -99,46 +150,88 @@ document.addEventListener("DOMContentLoaded", () => {
     matchesDiv.innerHTML = "Совпадения: " + matches.join(", ");
     statsDiv.innerHTML = `Общее количество совпадений: ${totalMatches} <br> Количество дубликатов: ${totalDuplicates}`;
     downloadButton.style.display = totalMatches > 0 ? "block" : "none";
-    resetButton.style.display = "block"; // Показываем кнопку сброса
+    resetButton.style.display = "block";
+    previewButton.style.display = totalMatches > 0 ? "block" : "none";
 
-    // Очищение инпута
     numberInput.value = "";
-
-    downloadButton.onclick = function () {
-      const zip = new JSZip();
-      const folder = zip.folder("matched_files"); // Создание папки в архиве
-
-      addFilesToZip(folder, matches.map((fileName) => {
-        return filesArray.find((f) => f.name === fileName);
-      })).then(() => {
-        zip.generateAsync({ type: "blob" }).then(function (content) {
-          const link = document.createElement("a");
-          link.href = URL.createObjectURL(content); // Создаем URL для ZIP-архива
-          link.download = "Выбранные фото.zip"; // Имя ZIP-архива
-          link.click(); // Симулируем нажатие для загрузки
-        });
-      });
-    };
   };
 
-  const addFilesToZip = (folder, files) => {
-    const addFileToZip = (index) => {
-      if (index >= files.length) {
-        return Promise.resolve(); // Все файлы добавлены
-      } 
-      const file = files[index];
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          folder.file(file.name, e.target.result); // Добавление файла в папку
-          resolve(addFileToZip(index + 1)); // Заканчиваем текущее добавление и начинаем следующее
-        };
-        reader.onerror = reject;
-        reader.readAsArrayBuffer(file); // Читаем содержимое файла как ArrayBuffer
+  const showPreview = () => {
+    fileList.style.display = "none"; // Скрыть список файлов
+    previewContainer.innerHTML = "";
+    previewContainer.style.display = "flex";
+    previewContainer.style.flexWrap = "wrap";
+
+    filesArray.forEach((file) => {
+      const imgElement = document.createElement("img");
+      imgElement.src = URL.createObjectURL(file);
+      imgElement.alt = file.name;
+      imgElement.classList.add("preview-img");
+      imgElement.onclick = () => toggleSelectImage(file, imgElement);
+      previewContainer.appendChild(imgElement);
+
+      if (matches.includes(file.name)) {
+        imgElement.classList.add("matched");
+      }
+    });
+
+    updateMatchCount();
+  };
+
+  const toggleSelectImage = (file, imgElement) => {
+    const index = selectedImages.indexOf(file.name);
+    if (index > -1) {
+      selectedImages.splice(index, 1);
+      imgElement.classList.remove("selected");
+    } else {
+      selectedImages.push(file.name);
+      imgElement.classList.add("selected");
+    }
+
+    updateMatchCount();
+  };
+
+  const updateMatchCount = () => {
+    const uniqueSelectedImages = Array.from(
+      new Set([...matches, ...selectedImages])
+    );
+    matchesDiv.innerHTML = "Совпадения: " + uniqueSelectedImages.join(", ");
+    statsDiv.innerHTML = `Общее количество совпадений: ${uniqueSelectedImages.length}`;
+  };
+
+  const downloadSelectedFiles = () => {
+    const zip = new JSZip();
+    const folder = zip.folder("matched_files");
+
+    const allFilesToDownload = Array.from(
+      new Set([...matches, ...selectedImages])
+    );
+
+    const fileReadPromises = allFilesToDownload
+      .map((fileName) => {
+        const file = filesArray.find((f) => f.name === fileName);
+        if (file) {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              folder.file(file.name, e.target.result);
+              resolve();
+            };
+            reader.onerror = reject;
+            reader.readAsArrayBuffer(file);
+          });
+        }
+      })
+      .filter(Boolean);
+
+    Promise.all(fileReadPromises).then(() => {
+      zip.generateAsync({ type: "blob" }).then(function (content) {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(content);
+        link.download = "Выбранные фото.zip";
+        link.click();
       });
-    };
-    
-    return addFileToZip(0); // Начинаем добавление с первого файла
+    });
   };
 
   checkButton.addEventListener("click", handleCheck);
@@ -147,6 +240,9 @@ document.addEventListener("DOMContentLoaded", () => {
       handleCheck();
     }
   });
+
+  previewButton.addEventListener("click", showPreview);
+  downloadButton.addEventListener("click", downloadSelectedFiles);
 
   function highlightMatch(fileName) {
     fileList.querySelectorAll("li").forEach((li) => {
@@ -164,9 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Обработчик события для кнопки сброса
   resetButton.addEventListener("click", function () {
-    // Сброс значений
     fileInput.value = "";
     fileList.innerHTML = "";
     matchesDiv.innerHTML = "";
@@ -174,6 +268,10 @@ document.addEventListener("DOMContentLoaded", () => {
     numberInput.value = "";
     downloadButton.style.display = "none";
     resetButton.style.display = "none";
+    previewButton.style.display = "none";
+    previewContainer.style.display = "none";
     filesArray = [];
+    selectedImages = [];
+    matches = [];
   });
 });
