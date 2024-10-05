@@ -148,6 +148,11 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const downloadSelectedFiles = () => {
+    if (filesArray.length === 0 || matches.length === 0) {
+      alert("Нет файлов для загрузки.");
+      return; // Проверка на наличие файлов
+    }
+
     const zip = new JSZip();
     const folder = zip.folder("matched_files");
 
